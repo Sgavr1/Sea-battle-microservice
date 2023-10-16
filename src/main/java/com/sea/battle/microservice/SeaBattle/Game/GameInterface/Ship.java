@@ -1,4 +1,22 @@
 package com.sea.battle.microservice.SeaBattle.Game.GameInterface;
 
-public interface Ship {
+import org.springframework.stereotype.Component;
+
+public interface Ship extends GameObject{
+    int getWidth();
+    int getHeight();
+    boolean getCollision(int x, int y, int width, int height);
+    ShipComponent[] getComponents();
+    StateDamage damage(int x, int y);
+    StateShip getState();
+    enum StateShip{
+        NotDamaged,
+        Damaged,
+        Destroy
+    };
+    enum StateDamage{
+        Miss,
+        Damage,
+        Destroy
+    }
 }

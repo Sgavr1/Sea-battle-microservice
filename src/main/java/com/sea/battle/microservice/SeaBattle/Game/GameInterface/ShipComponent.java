@@ -1,4 +1,5 @@
 package com.sea.battle.microservice.SeaBattle.Game.GameInterface;
 
-public interface ShipComponent {
+public interface ShipComponent extends GameObject{
+    boolean getState();
 }
