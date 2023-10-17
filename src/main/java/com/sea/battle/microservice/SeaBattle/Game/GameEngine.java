@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 @Component
 public class GameEngine implements Runnable{
     public List<Game> games;
+    public List<PlayerSession> players;
     private Thread engine;
 
     public GameEngine(){

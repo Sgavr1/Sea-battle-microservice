@@ -7,16 +7,10 @@ public interface Ship extends GameObject{
     int getHeight();
     boolean getCollision(int x, int y, int width, int height);
     ShipComponent[] getComponents();
-    StateDamage damage(int x, int y);
     StateShip getState();
     enum StateShip{
         NotDamaged,
         Damaged,
         Destroy
     };
-    enum StateDamage{
-        Miss,
-        Damage,
-        Destroy
-    }
 }
