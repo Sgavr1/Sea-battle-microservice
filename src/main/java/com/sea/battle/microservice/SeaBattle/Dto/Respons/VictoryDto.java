@@ -2,11 +2,11 @@ package com.sea.battle.microservice.SeaBattle.Dto.Respons;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LoseDto {
-    @SerializedName("playerLoseId")
+public class VictoryDto {
+    @SerializedName("playerVictoryId")
     private Long id;
 
-    public LoseDto(Long id) {
+    public VictoryDto(Long id) {
         this.id = id;
     }
 }
