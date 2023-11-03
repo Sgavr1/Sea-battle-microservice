@@ -11,4 +11,19 @@ public class AddShipDto {
     private Integer width;
     @SerializedName("height")
     private Integer height;
+
+    public Integer getY() {
+        return y;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+    public Integer getX() {
+        return x;
+    }
 }

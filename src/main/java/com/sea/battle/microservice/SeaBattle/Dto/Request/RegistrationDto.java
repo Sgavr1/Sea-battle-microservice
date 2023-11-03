@@ -5,4 +5,8 @@ import com.google.gson.annotations.SerializedName;
 public class RegistrationDto {
     @SerializedName("playerId")
     private Long id;
+
+    public Long getId() {
+        return id;
+    }
 }

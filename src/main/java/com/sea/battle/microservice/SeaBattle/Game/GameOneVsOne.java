@@ -1,10 +1,10 @@
 package com.sea.battle.microservice.SeaBattle.Game;
 
 import com.google.gson.Gson;
-import com.sea.battle.microservice.SeaBattle.Dto.Respons.LoseDto;
-import com.sea.battle.microservice.SeaBattle.Dto.Respons.MessageDto;
+import com.sea.battle.microservice.SeaBattle.Dto.Respons.*;
 import com.sea.battle.microservice.SeaBattle.Game.GameInterface.Game;
 import com.sea.battle.microservice.SeaBattle.Game.GameInterface.Player;
+import com.sea.battle.microservice.SeaBattle.Game.GameInterface.Ship;
 
 public class GameOneVsOne implements Game {
     private static final String MESSAGE_NOT_TURN  = "Now it`s the opponent`s turn";
@@ -38,6 +38,14 @@ public class GameOneVsOne implements Game {
 
         player1.setGame(this);
         player2.setGame(this);
+
+        player1.setState(Player.PlayerState.Play);
+        player2.setState(Player.PlayerState.Play);
+        player1.sendMessage(gson.toJson(new MessageDto("Start game")));
+        player1.sendMessage(gson.toJson(new MessageDto("Your turn")));
+        player2.sendMessage(gson.toJson(new MessageDto("Opponent`s move")));
+        player1.sendMessage(gson.toJson(new PlayerInfoDto(player1.getMyArena(),player2.getArenaForEnemy())));
+        player2.sendMessage(gson.toJson(new PlayerInfoDto(player2.getMyArena(),player1.getArenaForEnemy())));
     }
 
     @Override
@@ -64,8 +72,22 @@ public class GameOneVsOne implements Game {
             lastTime = System.currentTimeMillis();
 
             if(timeDisconnect >= 30000){
-                //if(players[0].getState() == Player.PlayerState.Disconnect) players[0].sendMessage(gson.toJson(new LoseDto()));
-                //if(players[1].getState() == Player.PlayerState.Disconnect) players[1].sendMessage(gson.toJson(new LoseDto()));
+                if(players[0].getState() == Player.PlayerState.Disconnect && players[1].getState() == Player.PlayerState.Disconnect) {
+
+                    players[0].sendMessage(gson.toJson(new DrawDto(players[0].getId())));
+                    players[1].sendMessage(gson.toJson(new DrawDto(players[1].getId())));
+
+                } else if (players[0].getState() == Player.PlayerState.Disconnect) {
+
+                    players[0].sendMessage(gson.toJson(new LoseDto(players[0].getId())));
+                    players[1].sendMessage(gson.toJson(new VictoryDto(players[1].getId())));
+
+                }else {
+
+                    players[0].sendMessage(gson.toJson(new VictoryDto(players[0].getId())));
+                    players[1].sendMessage(gson.toJson(new LoseDto(players[1].getId())));
+
+                }
 
                 players[0].setState(Player.PlayerState.End);
                 players[1].setState(Player.PlayerState.End);
@@ -73,6 +95,7 @@ public class GameOneVsOne implements Game {
 
             return true;
         }
+        timeDisconnect = 0;
 
         timer += System.currentTimeMillis() - lastTime;
         lastTime = System.currentTimeMillis();
@@ -109,10 +132,16 @@ public class GameOneVsOne implements Game {
             return;
         }else if(state == Player.StepAnswer.Miss){
             player.sendMessage(gson.toJson(new MessageDto(MESSAGE_MISS_MOVE)));
-        }else if(state == Player.StepAnswer.Damage){
-
         }else{
+            player.sendMessage(gson.toJson(new PlayerInfoDto(player.getMyArena(),other.getArenaForEnemy())));
+            other.sendMessage(gson.toJson(new PlayerInfoDto(other.getMyArena(),player.getArenaForEnemy())));
+        }
 
+        if(checkVictory(other)){
+            player.sendMessage(gson.toJson(new VictoryDto(player.getId())));
+            other.sendMessage(gson.toJson(new LoseDto(other.getId())));
+
+            return;
         }
 
         lastTime = System.currentTimeMillis();
@@ -127,5 +156,15 @@ public class GameOneVsOne implements Game {
         if(players[0].getState() == Player.PlayerState.End || players[1].getState() == Player.PlayerState.End) return GameState.Finished;
         if (players[0].getState() != Player.PlayerState.Play || players[1].getState() != Player.PlayerState.Play) return GameState.Pause;
         return GameState.Play;
+    }
+
+    public boolean checkVictory(Player player){
+        for (Ship ship:player.getShips()) {
+            if(ship.getState() != Ship.StateShip.Destroy){
+                return false;
+            }
+        }
+
+        return true;
     }
 }

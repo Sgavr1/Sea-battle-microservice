@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 public interface Ship extends GameObject{
     int getWidth();
     int getHeight();
-    boolean getCollision(int x, int y, int width, int height);
+    boolean collision(int x, int y, int width, int height);
     ShipComponent[] getComponents();
     StateShip getState();
     enum StateShip{
